@@ -1,0 +1,62 @@
+=============
+Projet TMLN 1
+=============
+
+Sujet:
+======
+ * construire un outil en ligne de commande de correction orthographique rapide et stable en utilisant une distance de Damerau-Levenshtein
+ * par groupe de 2 personnes
+ * à rendre par email (zip ou tar.gz ou tar.bz2) à sylvain.utard@gmail.com avec balise [TEXTMINING] avant le 14 Juin 23:59:59
+
+Contraintes:
+=============
+ * au minimum 3000 qps/core en distance = 0
+ * au minimum 300 qps/core en distance = 1
+ * au minimum 30 qps/core en distance = 2
+ * les programmes ne doivent jamais consommer plus de 512M de RAM
+ * Langages autorisés: C/C++ (boost autorisé, précisé la version dans le fichier README), Java, autre (avec justification)
+ * Autotools ou CMake si C/C++; Ant si Java; autre (avec justification)
+
+Livrable:
+=========
+ * Code source commenté avec Doxygen
+ * README (explique le projet + répond aux questions ci-dessous)
+ * AUTHORS (liste les login_l, format EPITA)
+ * (configure et Makefile) ou build.xml
+ * La compilation doit générer 2 binaires dans le répertoire racine:
+   * TextMiningCompiler (2 arguments = fichiers des mots+freqs, dictionnaire compilé)
+   * TextMiningApp (1 argument = dictionaire compilé)
+
+Input:
+======
+ * Fichier des 3M de mots les plus fréquents extraits de pages web françaises (formes normalisées)
+
+Implémentation:
+===============
+ * ref fournie
+ * reproduire EXACTEMENT le comportement de la ref
+ * correction par moulinette+diff strict
+
+Démo:
+=====
+./TextMiningCompiler /path/to/words.txt /path/to/dict.bin
+echo "approx 0 test" | ./TextMiningApp /path/to/dict.bin
+echo "approx 0 test\napprox 2 test" | ./TextMiningApp /path/to/dict.bin
+
+Remarques:
+==========
+ * la réponse est au format JSON
+ * les résultats doivent être triés par: distance (croissante), puis par fréquence (décroissante), puis par ordre lexicographique (croissant)
+ * seul /dev/stdout est diffée, libre à vous d'écrire sur /dev/stderr
+ * l'approximation sera testée avec dist=[0..W] (avec W = la taille du mot)
+
+
+Questions:
+==========
+ 1. Decrivez les choix de design de votre programme
+ 2.	Listez l’ensemble des tests effectués sur votre programme (en plus des units tests)
+ 3.	Avez-vous détecté des cas où la correction par distance ne fonctionnait pas (même avec une distance élevée) ?
+ 4.	Quelle est la structure de données que vous avez implémentée dans votre projet, pourquoi ?
+ 5.	Proposez un réglage automatique de la distance pour un programme qui prend juste une chaîne de caractères en entrée, donner le processus d’évaluation ainsi que les résultats
+ 6.	Comment comptez vous améliorer les performances de votre programme
+ 7.	Que manque-t-il à votre correcteur orthographique pour qu’il soit à l’état de l’art ?
