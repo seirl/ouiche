@@ -75,6 +75,9 @@ public:
 
     matches_t matches(const std::string& word, unsigned max_distance = 0) const
     {
+        matches_t res;
+        matches_in_(res, word, 0, max_distance, max_distance);
+        return res;
     }
 
 
@@ -104,8 +107,6 @@ private:
                      unsigned max_d = 0) const
     {
         assert(start <= word.size());
-        if (d_left < 0)
-            return;
         if (start == word.size())
             matches[word] = {max_d - d_left, freq_};
         //FIXME(seirl): complete the algorithm
