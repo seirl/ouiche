@@ -5,6 +5,12 @@
 #include <memory>
 #include <unordered_map>
 
+#ifndef NDEBUG
+# define DEBUG(fmt, args...) fprintf(stderr, "debug: " fmt "\n", ## args)
+#else
+# define DEBUG(...)
+#endif
+
 class Trie
 {
 public:
@@ -16,6 +22,19 @@ public:
       : children_()
       , freq_(0)
     {
+    }
+
+    void load(std::istream& in)
+    {
+        std::string word;
+        unsigned freq;
+        while (!in.eof())
+        {
+            in >> word;
+            in >> freq;
+            DEBUG("adding word %s with freq %d", word.c_str(), freq);
+            add_word(freq, word);
+        }
     }
 
     void add_word(unsigned freq, const std::string& word, size_t start = 0)
@@ -91,14 +110,15 @@ public:
 private:
     void format_dot_here_(std::ostream& out) const
     {
-        out << "    " << this << " [label=\"";
+        out << "    n" << this << " [label=\"";
         if (freq_)
             out << freq_;
         out << "\"];"  << std::endl;
         for (const auto& p: children_)
         {
-            out << "    n" << this << " -> " << p.second.get() <<
+            out << "    n" << this << " -> n" << p.second.get() <<
                 " [label=\"" << p.first << "\"];" << std::endl;
+            p.second->format_dot_here_(out);
         }
     }
 
