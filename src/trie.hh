@@ -1,7 +1,8 @@
 #pragma once
 
-#include <cstdio>
 #include <cassert>
+#include <cstdio>
+#include <cstring>
 #include <iostream>
 #include <memory>
 #include <unordered_map>
@@ -18,9 +19,14 @@
 class Trie
 {
 public:
-    // word -> distance, freq
-    using matches_t =
-        std::unordered_map<std::string, std::pair<unsigned, unsigned>>;
+    // word, distance, freq
+    struct match_t
+    {
+        std::string word;
+        unsigned distance;
+        unsigned freq;
+    };
+    using matches_t = std::vector<match_t>;
     using edge_t = std::pair<std::string, std::unique_ptr<Trie>>;
 
     Trie(unsigned freq = 0)
@@ -140,6 +146,17 @@ public:
         matches_t res;
         DamerauLevenshtein dl(word, max_distance);
         matches_(res, dl);
+        std::sort(res.begin(), res.end(), [](match_t a, match_t b) -> bool {
+                if (a.distance < b.distance)
+                    return true;
+                if (a.distance > b.distance)
+                    return false;
+                if (b.freq < a.freq)
+                    return true;
+                if (b.freq > a.freq)
+                    return false;
+                return (a.word.compare(b.word) < 0);
+        });
         return res;
     }
 
@@ -206,7 +223,7 @@ private:
             accept = res_feed.second;
         }
         if (accept && edge.second->freq_ != 0)
-            res[dl.current()] = {dl.dist(), edge.second->freq_};
+            res.push_back(match_t{dl.current(), dl.dist(), edge.second->freq_});
         edge.second->matches_(res, dl);
     }
 
