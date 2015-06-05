@@ -99,13 +99,15 @@ public:
         size_t nb_children;
         in.read(reinterpret_cast<char*>(&res->freq_), sizeof (unsigned));
         in.read(reinterpret_cast<char*>(&nb_children), sizeof (size_t));
+        res->children_.reserve(nb_children);
         for (size_t i = 0; i < nb_children; i++)
         {
             size_t lsize;
             in.read(reinterpret_cast<char*>(&lsize), sizeof (size_t));
             std::vector<char> buf(lsize);
             in.read(&buf[0], lsize);
-            res->children_[i] = {std::string(&buf[0]), deserialize(in)};
+            res->children_.emplace_back(std::string(&buf[0], lsize),
+                                        deserialize(in));
         }
         return res;
     }
