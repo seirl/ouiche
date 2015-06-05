@@ -22,8 +22,8 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    Trie trie;
-    trie.load(words_f);
+    auto trie = std::make_unique<Trie>();
+    trie->load(words_f);
     words_f.close();
 
     std::ofstream dict_f(argv[2]);
@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    trie.serialize(dict_f);
+    trie->serialize(dict_f);
     dict_f.close();
     return 0;
 }

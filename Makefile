@@ -14,4 +14,4 @@ TextMiningApp:
 
 clean:
 	rm -f TextMiningCompiler TextMiningApp test/print test/deserialize-print \
-		test/serialize
+		test/serialize test/deserialize
