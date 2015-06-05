@@ -8,7 +8,7 @@
 #include <vector>
 
 #ifndef NDEBUG
-# define DEBUG(fmt, args...) fprintf(stderr, "debug: " fmt "\n", ## args)
+# define DEBUG(fmt, ...) fprintf(stderr, "debug: " fmt "\n", ## __VA_ARGS__)
 #else
 # define DEBUG(...)
 #endif
@@ -47,41 +47,32 @@ public:
             freq_ = freq;
             return;
         }
-        size_t node = node_start_(word[start]);
-        if (node == children_.size()) // no edge with same starting char
+        size_t e = edge_start_(word[start]);
+        if (e == children_.size()) // no edge with same starting char
             children_.push_back({word.substr(start),
                                  std::make_unique<Trie>(freq)});
         else
         {
-            auto& edge = children_[node];
+            auto& edge = children_[e];
             size_t pos = std::distance(edge.first.begin(),
                     std::mismatch(word.begin() + start, word.end(),
                                   edge.first.begin()).second);
             if (pos == edge.first.size()) // edge is the prefix
                 edge.second->add_word(freq, word, start + edge.first.size());
-            else if (pos == word.size() - start)
-            {
-                // word is a prefix of the label, we need to put a node in the
-                // middle
-                auto node_split = std::make_unique<Trie>(freq);
-                node_split->children_.push_back({
-                        edge.first.substr(pos),
-                        std::move(edge.second)
-                });
-                edge = {edge.first.substr(0, pos), std::move(node_split)};
-            }
             else
             {
-                // common prefix, we need to split and fork the edge
                 auto node_split = std::make_unique<Trie>();
                 node_split->children_.push_back({
                         edge.first.substr(pos),
                         std::move(edge.second)
                 });
-                node_split->children_.push_back({
-                        word.substr(start + pos),
-                        std::make_unique<Trie>(freq)
-                });
+                if (pos == word.size() - start) // word is prefix of edge label
+                    node_split->freq_ = freq;
+                else // word and edge have a common prefix
+                    node_split->children_.push_back({
+                            word.substr(start + pos),
+                            std::make_unique<Trie>(freq)
+                    });
                 edge = {edge.first.substr(0, pos), std::move(node_split)};
             }
         }
@@ -125,10 +116,10 @@ public:
         if (start == word.size())
             return freq_;
 
-        size_t node = node_start_(word[start]);
-        if (node == children_.size())
+        size_t e = edge_start_(word[start]);
+        if (e == children_.size())
             return 0;
-        const auto& edge = children_[node];
+        const auto& edge = children_[e];
         if (edge.first.find(word, start) != 0)
             return 0;
         return edge.second->lookup(word, start + 1);
@@ -137,7 +128,7 @@ public:
     matches_t matches(const std::string& word, unsigned max_distance = 0) const
     {
         matches_t res;
-        matches_in_(res, word, 0, max_distance, max_distance);
+        matches_(res, word, 0, max_distance, max_distance);
         return res;
     }
 
@@ -164,9 +155,15 @@ private:
         }
     }
 
-    void matches_in_(matches_t& matches, const std::string& word,
-                     size_t start = 0, unsigned d_left = 0,
-                     unsigned max_d = 0) const
+    void matches_edge_(matches_t& matches, const std::string& word,
+                       unsigned e, size_t start = 0, unsigned d_left = 0,
+                       unsigned max_d = 0) const
+    {
+    }
+
+    void matches_(matches_t& matches, const std::string& word,
+                  size_t start = 0, unsigned d_left = 0,
+                  unsigned max_d = 0) const
     {
         assert(start <= word.size());
         if (start == word.size())
@@ -174,13 +171,13 @@ private:
         //FIXME(seirl): complete the algorithm
     }
 
-    size_t node_start_(char c) const
+    size_t edge_start_(char c) const
     {
-        size_t node;
-        for (node = 0; node < children_.size(); node++)
-            if (children_[node].first[0] == c)
+        size_t edge;
+        for (edge = 0; edge < children_.size(); edge++)
+            if (children_[edge].first[0] == c)
                 break;
-        return node;
+        return edge;
     }
 
     std::vector<std::pair<std::string, std::unique_ptr<Trie>>> children_;

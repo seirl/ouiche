@@ -1,0 +1,19 @@
+digraph Trie {
+    n0x7fff48358850 [label=""];
+    n0x7fff48358850 -> n0x85c0c0 [label="avi"];
+    n0x85c0c0 [label=""];
+    n0x85c0c0 -> n0x85c070 [label="on"];
+    n0x85c070 [label="42"];
+    n0x85c0c0 -> n0x85c360 [label="a"];
+    n0x85c360 [label=""];
+    n0x85c360 -> n0x85c170 [label="teur"];
+    n0x85c170 [label="13"];
+    n0x85c360 -> n0x85c3f0 [label="ire"];
+    n0x85c3f0 [label="15"];
+    n0x7fff48358850 -> n0x85c260 [label="con"];
+    n0x85c260 [label="1"];
+    n0x85c260 -> n0x85c200 [label="nard"];
+    n0x85c200 [label="12"];
+    n0x85c260 -> n0x85c010 [label="tribuable"];
+    n0x85c010 [label="1"];
+}
