@@ -1,5 +1,6 @@
 CC=g++
-CFLAGS=-Wall -Wextra -std=c++14
+CFLAGS=-Wall -Wextra -std=c++14 -g3 -DNDEBUG
+#CFLAGS+=-fprofile-arcs -ftest-coverage
 
 all: TextMiningCompiler TextMiningApp
 
