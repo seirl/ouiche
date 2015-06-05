@@ -42,14 +42,19 @@ int main(int argc, char* argv[])
 
     std::string approx;
     std::string word;
-    unsigned max_dist;
+    int max_dist;
     while (!std::cin.eof())
     {
         std::cin >> approx;
         std::cin >> max_dist;
         std::cin >> word;
 
-        auto res = trie->matches(word, max_dist);
-        print_matches(std::cout, res);
+        if (max_dist >= 0)
+        {
+            auto res = trie->matches(word, max_dist);
+            print_matches(std::cout, res);
+        }
+        else
+            print_matches(std::cout, {});
     }
 }
