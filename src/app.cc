@@ -16,6 +16,8 @@ void print_matches(std::ostream& out, const Trie::matches_t& matches)
             "\"word\":\"" << r.word << "\","
             "\"freq\":" << r.freq << ","
             "\"distance\":" << r.distance << "}";
+        if (i != matches.size() - 1)
+            out << ",";
     }
     out << "]" << std::endl;
 }
