@@ -7,6 +7,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include "damerau-levenshtein.hh"
+
 #ifndef NDEBUG
 # define DEBUG(fmt, ...) fprintf(stderr, "debug: " fmt "\n", ## __VA_ARGS__)
 #else
@@ -113,6 +115,11 @@ public:
         return res;
     }
 
+    static std::unique_ptr<Trie> deserialize_mem(const char* start)
+    {
+        return deserialize_mem_(&start);
+    }
+
     unsigned lookup(const std::string& word, size_t start = 0) const
     {
         assert(start <= word.size());
@@ -131,8 +138,8 @@ public:
     matches_t matches(const std::string& word, unsigned max_distance = 0) const
     {
         matches_t res;
-        std::string wc = word;
-        matches_(res, wc, 0, max_distance, max_distance);
+        DamerauLevenshtein dl(word, max_distance);
+        matches_(res, dl);
         return res;
     }
 
@@ -144,6 +151,25 @@ public:
     }
 
 private:
+    static std::unique_ptr<Trie> deserialize_mem_(const char** start)
+    {
+        auto res = std::make_unique<Trie>();
+
+        res->freq_ = *reinterpret_cast<const unsigned*>(*start);
+        *start += sizeof (unsigned);
+        size_t nb_children = *reinterpret_cast<const size_t*>(*start);
+        *start += sizeof (size_t);
+        for (size_t i = 0; i < nb_children; i++)
+        {
+            size_t lsize = *reinterpret_cast<const size_t*>(*start);
+            *start += sizeof (size_t);
+            std::string e(*start, lsize);
+            *start += lsize;
+            res->children_.emplace_back(e, deserialize_mem_(start));
+        }
+        return res;
+    }
+
     void format_dot_here_(std::ostream& out) const
     {
         out << "    n" << this << " [label=\"";
@@ -158,35 +184,32 @@ private:
         }
     }
 
-    bool is_next_(const std::string& prefix, unsigned start, unsigned len,
-                  int edge_offset = 0, int e = -1) const
+    void matches_(matches_t& res, DamerauLevenshtein& dl) const
     {
-        if (len == 0)
-            return true;
-        if (e == -1)
-            e = edge_start_(prefix[start]);
-        if (static_cast<size_t>(e) >= children_.size())
-            return false;
-        auto& edge = children_[e];
-        unsigned i;
-        for (i = 1; i + edge_offset < edge.first.size() && i < len; i++)
-            if (edge.first[i + edge_offset] != prefix[start + i])
-                return false;
-        i += 1;
-        return edge.second->is_next_(prefix, start + i, len - i);
+        unsigned baselen = dl.current().size();
+        for (const auto& edge : children_)
+        {
+            dl.rollback(baselen);
+            matches_edge_(res, dl, edge);
+        }
     }
 
-    void matches_(matches_t& matches, std::string& word,
-                  size_t start = 0,
-                  int edge_base = -1, int edge_offset = 0,
-                  unsigned d_left = 0, unsigned max_d = 0) const
+    void matches_edge_(matches_t& res, DamerauLevenshtein& dl,
+                       const edge_t& edge) const
     {
-        assert(start <= word.size());
-        if (start == word.size() && freq_ != 0)
-            matches[word] = {max_d - d_left, freq_};
-        if (is_next_(word, start, 1))
-            matches_(matches, word, start + 1, d_left, max_d);
+        bool accept = false;
+        for (char c: edge.first)
+        {
+            auto res_feed = dl.feed(c);
+            if (!res_feed.first) // should not continue
+                return;
+            accept = res_feed.second;
+        }
+        if (accept && edge.second->freq_ != 0)
+            res[dl.current()] = {dl.dist(), edge.second->freq_};
+        edge.second->matches_(res, dl);
     }
+
 
     int edge_start_(char c, unsigned edge_offset = 0) const
     {
