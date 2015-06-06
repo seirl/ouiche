@@ -38,7 +38,7 @@ public:
     // Returns a pair (continue searching, accept this one)
     std::pair<bool, bool> feed(char c)
     {
-        const unsigned infty = std::numeric_limits<unsigned>::max() - 255;
+        const unsigned infty = std::numeric_limits<unsigned>::max() >> 1;
 
         bool cont = false;
         current_.push_back(c);
