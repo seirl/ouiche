@@ -147,14 +147,10 @@ public:
         DamerauLevenshtein dl(word, max_distance);
         matches_(res, dl);
         std::sort(res.begin(), res.end(), [](match_t a, match_t b) -> bool {
-                if (a.distance < b.distance)
-                    return true;
-                if (a.distance > b.distance)
-                    return false;
-                if (b.freq < a.freq)
-                    return true;
-                if (b.freq > a.freq)
-                    return false;
+                if (a.distance != b.distance)
+                    return (a.distance < b.distance);
+                if (b.freq != a.freq)
+                    return (b.freq < a.freq);
                 return (a.word.compare(b.word) < 0);
         });
         return res;

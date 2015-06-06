@@ -59,4 +59,5 @@ int main(int argc, char* argv[])
         else
             print_matches(std::cout, {});
     }
+    return 0;
 }
