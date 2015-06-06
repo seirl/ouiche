@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -37,19 +38,27 @@ public:
     // Returns a pair (continue searching, accept this one)
     std::pair<bool, bool> feed(char c)
     {
+        const unsigned infty = std::numeric_limits<unsigned>::max() - 255;
+
         bool cont = false;
         current_.push_back(c);
-        table_.push_back(current_.size());
 
-        for (unsigned j = 0; j < word_.size(); j++)
+        size_t ts = table_.size();
+        size_t ws = word_.size();
+        size_t i = current_.size();
+
+        table_.resize(ts + ws + 1, infty);
+        table_[ts] = i;
+
+        unsigned lb = std::max(0,
+                static_cast<int>(i) - static_cast<int>(max_dist_) - 1);
+        unsigned rb = std::min(word_.size(), i + max_dist_);
+
+        for (unsigned j = lb; j < rb; j++)
         {
-            unsigned ts = table_.size();
-            unsigned ws = word_.size();
-
-            unsigned i = current_.size();
-            unsigned left = table_[ts - 1];
-            unsigned up = table_[ts - (ws + 1)];
-            unsigned diag = table_[ts - (ws + 1) - 1];
+            unsigned left = table_[i * (ws + 1) + j];
+            unsigned up = table_[(i - 1) * (ws + 1) + j + 1];
+            unsigned diag = table_[(i - 1) * (ws + 1) + j];
 
             unsigned dist = std::min({
                     left + 1,
@@ -61,10 +70,10 @@ public:
                 current_[i - 1] == word_[j - 1] &&
                 current_[i - 2] == word_[j])
             {
-                unsigned diag2 = table_[ts - 2 * (ws + 1) - 2];
+                unsigned diag2 = table_[(i - 2) * (ws + 1) + j - 1];
                 dist = std::min(dist, diag2 + 1);
             }
-            table_.push_back(dist);
+            table_[i * (ws + 1) + j + 1] = dist;
 
             if (dist <= max_dist_)
                 cont = true;
