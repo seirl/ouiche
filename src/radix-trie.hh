@@ -16,7 +16,7 @@
 # define DEBUG(...)
 #endif
 
-class Trie
+class RadixTrie
 {
 public:
     // word, distance, freq
@@ -27,9 +27,9 @@ public:
         unsigned freq;
     };
     using matches_t = std::vector<match_t>;
-    using edge_t = std::pair<std::string, std::unique_ptr<Trie>>;
+    using edge_t = std::pair<std::string, std::unique_ptr<RadixTrie>>;
 
-    Trie(unsigned freq = 0)
+    RadixTrie(unsigned freq = 0)
       : children_()
       , freq_(freq)
     {
@@ -59,7 +59,7 @@ public:
         int e = edge_start_(word[start]);
         if (e == -1) // no edge with same starting char
             children_.push_back({word.substr(start),
-                                 std::make_unique<Trie>(freq)});
+                                 std::make_unique<RadixTrie>(freq)});
         else
         {
             auto& edge = children_[e];
@@ -70,7 +70,7 @@ public:
                 edge.second->add_word(freq, word, start + edge.first.size());
             else
             {
-                auto node_split = std::make_unique<Trie>();
+                auto node_split = std::make_unique<RadixTrie>();
                 node_split->children_.push_back({
                         edge.first.substr(pos),
                         std::move(edge.second)
@@ -80,7 +80,7 @@ public:
                 else // word and edge have a common prefix
                     node_split->children_.push_back({
                             word.substr(start + pos),
-                            std::make_unique<Trie>(freq)
+                            std::make_unique<RadixTrie>(freq)
                     });
                 edge = {edge.first.substr(0, pos), std::move(node_split)};
             }
@@ -101,9 +101,9 @@ public:
         }
     }
 
-    static std::unique_ptr<Trie> deserialize(std::istream& in)
+    static std::unique_ptr<RadixTrie> deserialize(std::istream& in)
     {
-        auto res = std::make_unique<Trie>();
+        auto res = std::make_unique<RadixTrie>();
 
         size_t nb_children;
         in.read(reinterpret_cast<char*>(&res->freq_), sizeof (unsigned));
@@ -121,7 +121,7 @@ public:
         return res;
     }
 
-    static std::unique_ptr<Trie> deserialize_mem(const char* start)
+    static std::unique_ptr<RadixTrie> deserialize_mem(const char* start)
     {
         return deserialize_mem_(&start);
     }
@@ -158,15 +158,15 @@ public:
 
     void format_dot(std::ostream& out) const
     {
-        out << "digraph Trie {" << std::endl;
+        out << "digraph RadixTrie {" << std::endl;
         format_dot_here_(out);
         out << "}" << std::endl;
     }
 
 private:
-    static std::unique_ptr<Trie> deserialize_mem_(const char** start)
+    static std::unique_ptr<RadixTrie> deserialize_mem_(const char** start)
     {
-        auto res = std::make_unique<Trie>();
+        auto res = std::make_unique<RadixTrie>();
 
         res->freq_ = *reinterpret_cast<const unsigned*>(*start);
         *start += sizeof (unsigned);

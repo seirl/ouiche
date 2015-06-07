@@ -1,7 +1,7 @@
 #include <cstdlib>
 #include <fstream>
 
-#include "trie.hh"
+#include "radix-trie.hh"
 
 int main(int argc, char *argv[])
 {
@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    auto trie = std::make_unique<Trie>();
+    auto trie = std::make_unique<RadixTrie>();
     trie->load(words_f);
     words_f.close();
 

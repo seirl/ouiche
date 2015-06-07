@@ -1,4 +1,4 @@
-#include "trie.hh"
+#include "radix-trie.hh"
 
 #include <iostream>
 #include <fcntl.h>
@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
         abort();
 
     void* file = mmap(NULL, s.st_size, PROT_READ, MAP_FILE | MAP_SHARED, fd, 0);
-    auto trie = Trie::deserialize_mem(reinterpret_cast<char*>(file));
+    auto trie = RadixTrie::deserialize_mem(reinterpret_cast<char*>(file));
     trie->format_dot(std::cout);
     return 0;
 }

@@ -4,9 +4,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#include "trie.hh"
+#include "radix-trie.hh"
 
-void print_matches(std::ostream& out, const Trie::matches_t& matches)
+void print_matches(std::ostream& out, const RadixTrie::matches_t& matches)
 {
     out << "[";
     for (unsigned i = 0; i < matches.size(); i++)
@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
         abort();
 
     void* file = mmap(NULL, s.st_size, PROT_READ, MAP_FILE | MAP_SHARED, fd, 0);
-    auto trie = Trie::deserialize_mem(reinterpret_cast<char*>(file));
+    auto trie = RadixTrie::deserialize_mem(reinterpret_cast<char*>(file));
 
     std::string approx;
     std::string word;
