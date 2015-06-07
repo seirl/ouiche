@@ -5,7 +5,7 @@
 
 int main(int argc, char *argv[])
 {
-    if (argc < 2)
+    if (argc < 3)
     {
         std::cout << "Usage: " << argv[0] <<
             " /path/to/word/freq.txt /path/to/output/dict.bin" << std::endl;
@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    trie->serialize(dict_f);
+    trie->serialize_compact(dict_f);
     dict_f.close();
     return 0;
 }

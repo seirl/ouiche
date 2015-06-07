@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#include "compact-radix-trie.hh"
 #include "radix-trie.hh"
 
 void print_matches(std::ostream& out, const RadixTrie::matches_t& matches)
@@ -40,7 +41,7 @@ int main(int argc, char* argv[])
         abort();
 
     void* file = mmap(NULL, s.st_size, PROT_READ, MAP_FILE | MAP_SHARED, fd, 0);
-    auto trie = RadixTrie::deserialize_mem(reinterpret_cast<char*>(file));
+    char* start = reinterpret_cast<char*>(file);
 
     std::string approx;
     std::string word;
@@ -53,7 +54,7 @@ int main(int argc, char* argv[])
 
         if (max_dist >= 0)
         {
-            auto res = trie->matches(word, max_dist);
+            auto res = CompactRadixTrie::matches(word, start, max_dist);
             print_matches(std::cout, res);
         }
         else

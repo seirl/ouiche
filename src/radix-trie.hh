@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "compact-radix-trie.hh"
 #include "damerau-levenshtein.hh"
 
 #ifndef NDEBUG
@@ -19,14 +20,8 @@
 class RadixTrie
 {
 public:
-    // word, distance, freq
-    struct match_t
-    {
-        std::string word;
-        unsigned distance;
-        unsigned freq;
-    };
-    using matches_t = std::vector<match_t>;
+    using match_t = CompactRadixTrie::match_t;
+    using matches_t = CompactRadixTrie::matches_t;
     using edge_t = std::pair<std::string, std::unique_ptr<RadixTrie>>;
 
     RadixTrie(unsigned freq = 0)
@@ -124,6 +119,62 @@ public:
     static std::unique_ptr<RadixTrie> deserialize_mem(const char* start)
     {
         return deserialize_mem_(&start);
+    }
+
+    void serialize_compact(std::ostream& out) const
+    {
+        size_t nb_children = children_.size();
+        size_t zero = 0;
+        int start = out.tellp();
+
+        // CompactHead
+        out.write(reinterpret_cast<const char*>(&freq_), sizeof (unsigned));
+        out.write(reinterpret_cast<const char*>(&nb_children), sizeof (size_t));
+        int chpos = out.tellp();
+        for (size_t i = 0; i < nb_children; ++i)
+            out.write(reinterpret_cast<const char*>(&zero), sizeof (size_t));
+
+        for (const auto& p : children_)
+        {
+            // offset
+            size_t curpos = out.tellp();
+            size_t offset = curpos - start;
+            out.seekp(chpos);
+            out.write(reinterpret_cast<const char*>(&offset), sizeof (size_t));
+            out.seekp(curpos);
+            chpos += sizeof (size_t);
+
+            // label_len
+            size_t lsize = p.first.size();
+            out.write(reinterpret_cast<const char*>(&lsize), sizeof (size_t));
+
+            // label
+            out.write(p.first.c_str(), lsize);
+
+            // child
+            p.second->serialize_compact(out);
+        }
+    }
+
+    static std::unique_ptr<RadixTrie> deserialize_compact(const char* start)
+    {
+        using CompactHead = CompactRadixTrie::CompactHead;
+        using CompactChild = CompactRadixTrie::CompactChild;
+
+        auto res = std::make_unique<RadixTrie>();
+
+        const CompactHead* h = reinterpret_cast<const CompactHead*>(start);
+        res->freq_ = h->freq;
+
+        for (size_t c = 0; c < h->nb_children; ++c)
+        {
+            const char* cha = start + h->offset[c];
+            const CompactChild* ch = reinterpret_cast<const CompactChild*>(cha);
+            const char* caddr = cha + sizeof (size_t) + ch->label_len;
+            res->children_.push_back({std::string(ch->label, ch->label_len),
+                                      deserialize_compact(caddr)});
+        }
+        return res;
     }
 
     unsigned lookup(const std::string& word, size_t start = 0) const
