@@ -44,6 +44,4 @@ done
 echo "set(CMAKE_CXX_FLAGS \"$CXXFLAGS\")" > common.cmake
 echo "set(CMAKE_BUILD_TYPE $BUILD_TYPE)" >> common.cmake
 echo $COVERAGE >> common.cmake
-echo $GARBAGE_COLLECTOR >> common.cmake
 echo $CLANG >> common.cmake
-
