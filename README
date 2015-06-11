@@ -58,7 +58,21 @@ table to the previous distance.
 
 For instance, with a radix trie like this one:
 
-TODO
+    +---+  chien   +-------+
+    | 5 | <------- |   1   |
+    +---+          +-------+
+                     |
+                     | nich
+                     v
+    +---+  ien     +-------+
+    | 4 | <------- |   2   |
+    +---+          +-------+
+                     |
+                     | e
+                     v
+                   +-------+
+                   |   3   |
+                   +-------+
 
 We would get this table for the first word:
 
@@ -103,7 +117,7 @@ Then we rollback to 0, and we feed the other branch:
 
 Note that we don't have to compute the values of all the cases, the ones marked
 with a `oo` are not necessary since we do have a maximum distance, hence we
-only need to compute the "diagonal" of size `2 * max_dist + 1`.
+only need to compute the "diagonal window" of size `2 * max_dist + 1`.
 
 With this table, we are able to efficiently get the distances without having to
 compute useless data.
@@ -125,7 +139,7 @@ it could not detect that "piocje" is like "ouiche" with the right hand shifted
 to the right.
 There are also cases where using the default weights for all the editions is
 not really accurate: a transposition of two adjacent characters is more common
-than a deletion: "golbal" probably means "global" and not "golbal".
+than a deletion: "golbal" probably means "global" and not "gobal".
 
 ## Why did you implement a Radix Trie in your project?
 
@@ -136,12 +150,20 @@ reduced the memory consumption of the program, when compared to a regular trie.
 ## How could we automatically find an accurate maximum distance in a program
 that only takes a string in input?
 
-TODO
+We could guess a good distance according to the length of the input string. A
+value of `length / 5` would give good results since it allows for a mistake
+every 5 characters.
 
 ## Do you have any ideas for performance improvements?
 
-TODO
+We could probably have a more compact representation of the radix trie,
+since most of the bits are unused in the alphabet we're working on.
+We also could parallelize the search, since the queries are completely
+independant and never change the same structures, and have no shared state.
 
 ## What is missing to your spell-checker for it to be state-of-the-art?
 
-TODO
+State-of-the art spell checkers are able to take the keyboard position of the
+letters, the grammar of the sentence, the position in the sentence, the
+punctuation and the odds of doing a specific mistake into account. We are
+really far from that in this basic implementation.
