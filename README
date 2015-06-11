@@ -125,7 +125,7 @@ only need to compute the "diagonal window" of size `2 * max_dist + 1`.
 With this table, we are able to efficiently get the distances without having to
 compute useless data.
 
-## How was tested **ouiche**?
+## How was **ouiche** tested?
 
 **Ouiche** was tested using both unit testing for the Damerau-Levenshtein
 distance and manual testing using some tool binaries.
