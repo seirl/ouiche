@@ -1,12 +1,17 @@
-.PHONY: all clean
+.PHONY: all clean test
 
-all: build/Makefile
-	$(MAKE) -s -C build
+MK=$(MAKE) -s -C build
 
-build/Makefile: CMakeLists.txt
-	mkdir -p build
-	cd build && cmake ..
+all: build
+	$(MK)
+
+test: build
+	$(MK) test
 
 clean:
 	rm -f TextMiningApp TextMiningCompiler
 	rm -rf build
+
+build: CMakeLists.txt
+	mkdir -p build
+	cd build && cmake ..

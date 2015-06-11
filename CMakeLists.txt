@@ -21,9 +21,15 @@ set_target_properties(TextMiningCompiler PROPERTIES RUNTIME_OUTPUT_DIRECTORY
 set_target_properties(TextMiningApp PROPERTIES RUNTIME_OUTPUT_DIRECTORY
     "${CMAKE_CURRENT_SOURCE_DIR}")
 
-# Test binaries
+# Test tools
 
 add_executable (tool-deserialize test/tool-deserialize.cc)
 add_executable (tool-deserialize-print test/tool-deserialize-print.cc)
 add_executable (tool-print test/tool-deserialize-print.cc)
 add_executable (tool-serialize test/tool-serialize.cc)
+
+# Unit tests
+
+enable_testing()
+add_executable (unit test/unit.cc)
+add_test(unit test-unit)
