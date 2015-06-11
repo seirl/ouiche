@@ -149,8 +149,7 @@ A Radix Trie is a memory efficient trie, which allowed us to reduce the amount
 of indirections and access to the characters in an efficient manner. This also
 reduced the memory consumption of the program, when compared to a regular trie.
 
-## How could we automatically find an accurate maximum distance in a program
-that only takes a string in input?
+## Given only a string, could we automatically find an accurate max distance?
 
 We could guess a good distance according to the length of the input string. A
 value of `length / 5` would give good results since it allows for a mistake
