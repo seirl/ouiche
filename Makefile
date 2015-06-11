@@ -5,7 +5,7 @@ MK=$(MAKE) -s -C build
 all: build
 	$(MK)
 
-test: build
+test: all build
 	$(MK) test
 
 clean:

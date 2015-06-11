@@ -32,4 +32,4 @@ add_executable (tool-serialize test/tool-serialize.cc)
 
 enable_testing()
 add_executable (unit test/unit.cc)
-add_test(unit test-unit)
+add_test(unit unit)

@@ -82,7 +82,7 @@ public:
     }
 
 private:
-    const std::string& word_;
+    std::string word_;
     unsigned max_dist_;
     std::string current_;
     std::vector<unsigned> table_;
