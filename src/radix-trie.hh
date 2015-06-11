@@ -12,7 +12,7 @@
 #include "damerau-levenshtein.hh"
 
 #ifndef NDEBUG
-# define DEBUG(fmt, ...) fprintf(stderr, "debug: " fmt "\n", ## __VA_ARGS__)
+# define DEBUG(fmt, ...) fprintf(stderr, "debug: " fmt "\n", __VA_ARGS__)
 #else
 # define DEBUG(...)
 #endif

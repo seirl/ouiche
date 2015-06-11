@@ -4,3 +4,5 @@ test/print
 test/serialize
 test/deserialize-print
 *.png
+common.cmake
+build

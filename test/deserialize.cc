@@ -19,6 +19,6 @@ int main(int argc, char* argv[]) {
         abort();
 
     void* file = mmap(NULL, s.st_size, PROT_READ, MAP_FILE | MAP_SHARED, fd, 0);
-    RadixTrie::deserialize_mem(reinterpret_cast<char*>(file));
+    RadixTrie::deserialize_compact(reinterpret_cast<char*>(file));
     return 0;
 }
