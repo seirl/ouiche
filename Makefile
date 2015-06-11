@@ -1,9 +1,11 @@
 .PHONY: all clean
 
-all:
+all: build/Makefile
+	$(MAKE) -s -C build
+
+build/Makefile: CMakeLists.txt
 	mkdir -p build
 	cd build && cmake ..
-	$(MAKE) -s -C build
 
 clean:
 	rm -f TextMiningApp TextMiningCompiler

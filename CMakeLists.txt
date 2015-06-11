@@ -23,6 +23,7 @@ set_target_properties(TextMiningApp PROPERTIES RUNTIME_OUTPUT_DIRECTORY
 
 # Test binaries
 
-add_executable (serialize test/serialize.cc)
-add_executable (deserialize test/deserialize.cc)
-add_executable (deserialize-print test/deserialize-print.cc)
+add_executable (tool-deserialize test/tool-deserialize.cc)
+add_executable (tool-deserialize-print test/tool-deserialize-print.cc)
+add_executable (tool-print test/tool-deserialize-print.cc)
+add_executable (tool-serialize test/tool-serialize.cc)
