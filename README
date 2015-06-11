@@ -1,5 +1,21 @@
 # Ouiche
 
+> Peter — Et moi pour les gonzesses je suis super d’accord avec toi. Mais pour
+> la bouffe je vois pas ce que tu veux dire. Tu aurais envie de manger quoi
+> exactement ?
+>
+> Steven — Ben je sais pas, par exemple une quiche lorraine.
+>
+> Peter — Une ouiche.
+>
+> Steven — Quoi ?
+>
+> Peter — On dit « une ouiche lorraine ».
+>
+> Steven — Tu es sûr ?
+
+-- La Classe Américaine
+
 **Ouiche** is a fast spell-checker in C++, designed to be efficient by using a
 compact Radix Trie with a dynamic Damerau-Levenshtein distance to compute
 the word suggestions.
