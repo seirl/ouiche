@@ -133,8 +133,7 @@ distance and manual testing using some tool binaries.
 We performed some diffs of our output with the reference program to ensure the
 results were correct.
 
-## Have you detected any cases where the Damerau-Levenshtein distance is not
-adapted?
+## Have you found cases where the Damerau-Levenshtein distance is not accurate?
 
 There are a lot of cases where this distance is not adapted. For instance, it
 does not take into account the position of letters on the keyboard, therefore
