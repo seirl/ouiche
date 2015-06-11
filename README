@@ -14,7 +14,7 @@
 >
 > Steven — Tu es sûr ?
 
--- La Classe Américaine
+-- La Classe Américaine - http://ouich.es/#ouiche
 
 **Ouiche** is a fast spell-checker in C++, designed to be efficient by using a
 compact Radix Trie with a dynamic Damerau-Levenshtein distance to compute
