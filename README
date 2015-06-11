@@ -1,0 +1,147 @@
+# Ouiche
+
+**Ouiche** is a fast spell-checker in C++, designed to be efficient by using a
+compact Radix Trie with a dynamic Damerau-Levenshtein distance to compute
+the word suggestions.
+
+# Build instructions
+
+To compile **Ouiche**, use:
+
+    $ ./configure
+    $ make
+
+This will create two binaries in the main folder, `TextMiningCompiler` and
+`TextMiningApp`.
+
+**Ouiche** is released under the Beerware License. See the LICENSE file for
+more information.
+
+# Usage
+
+* `TextMiningCompiler` is used to compile the Radix Trie from a dictionary
+* `TextMiningApp` takes the compiled dictionary and correct the words given in
+  the standard input.
+
+## Example
+
+    ./TextMiningCompiler words.txt dict.bin
+    ./TextMiningApp dict.bin
+    > approx 0 cats
+    [{"word":"cats","freq":815877,"distance":0}]
+    > approx 1 bachibousouk
+    [{"word":"bachibouzouk","freq":8998,"distance":1}]
+    > approx 2 analphabaite
+    [{"word":"analphabete","freq":84674,"distance":2}]
+    > approx 3 aoviaiateur
+    [{"word":"aviateur","freq":194553,"distance":3},{"word":"naviagateur","freq":530,"distance":3},{"word":"affiliateur","freq":382,"distance":3},{"word":"avigateur","freq":336,"distance":3}]
+
+# FAQ
+
+## What are the main design choices of **ouiche**?
+
+The compiler reads the words from the input and build a *dynamic* Radix Trie.
+This Trie is stored on the heap, which allows us to add words during the
+runtime. Once this dynamic tree is built, we compact it so that it is
+represented contiguously in memory. This reduces its memory usage since we're
+only using offsets instead of raw pointers. It also allows for a faster
+deserialization since we only mmap the file in memory and use the structure
+as-is.
+
+The app uses `mmap(2)` to fetch the trie in memory. Then, for every word asked,
+it constructs a Damerau-Levenshtein table with this words. This dynamic table
+is able to be "fed" with a character, and "rollbacked" to a previous state.
+This allows us to fed the characters of the trie as they come, until the
+DL table has no way to output a distance with a smaller size than the maximum
+distance, in which case we try another branch of the trie by resetting the DL
+table to the previous distance.
+
+For instance, with a radix trie like this one:
+
+TODO
+
+We would get this table for the first word:
+
+          c  h  i  e  n
+       0  1  2  3  4  5
+    n  1  1  2  3  4 oo
+    i  2  2  2  2  3  4
+    c  3  2  3  3  3  4
+    h  4  3  2  3  4  4
+    e  5 oo  3  3  3  4
+
+Then we rollback to size 4:
+
+          c  h  i  e  n
+       0  1  2  3  4  5
+    n  1  1  2  3  4 oo
+    i  2  2  2  2  3  4
+    c  3  2  3  3  3  4
+    h  4  3  2  3  4  4
+
+Then we feed the other characters:
+
+          c  h  i  e  n
+       0  1  2  3  4  5
+    n  1  1  2  3  4 oo
+    i  2  2  2  2  3  4
+    c  3  2  3  3  3  4
+    h  4  3  2  3  4  4
+    i  5 oo  3  2  3  4
+    e  6 oo oo  3  2  3
+    n  7 oo oo oo  3  2
+
+Then we rollback to 0, and we feed the other branch:
+
+          c  h  i  e  n
+       0  1  2  3  4  5
+    c  1  0  1  2  3 oo
+    h  2  1  0  1  2  3
+    i  3  2  1  0  1  2
+    e  4  3  2  1  0  1
+    n  5 oo  3  2  1  0
+
+Note that we don't have to compute the values of all the cases, the ones marked
+with a `oo` are not necessary since we do have a maximum distance, hence we
+only need to compute the "diagonal" of size `2 * max_dist + 1`.
+
+With this table, we are able to efficiently get the distances without having to
+compute useless data.
+
+## How was tested **ouiche**?
+
+**Ouiche** was tested using both unit testing for the Damerau-Levenshtein
+distance and manual testing using some tool binaries.
+
+We performed some diffs of our output with the reference program to ensure the
+results were correct.
+
+## Have you detected any cases where the Damerau-Levenshtein distance is not
+adapted?
+
+There are a lot of cases where this distance is not adapted. For instance, it
+does not take into account the position of letters on the keyboard, therefore
+it could not detect that "piocje" is like "ouiche" with the right hand shifted
+to the right.
+There are also cases where using the default weights for all the editions is
+not really accurate: a transposition of two adjacent characters is more common
+than a deletion: "golbal" probably means "global" and not "golbal".
+
+## Why did you implement a Radix Trie in your project?
+
+A Radix Trie is a memory efficient trie, which allowed us to reduce the amount
+of indirections and access to the characters in an efficient manner. This also
+reduced the memory consumption of the program, when compared to a regular trie.
+
+## How could we automatically find an accurate maximum distance in a program
+that only takes a string in input?
+
+TODO
+
+## Do you have any ideas for performance improvements?
+
+TODO
+
+## What is missing to your spell-checker for it to be state-of-the-art?
+
+TODO

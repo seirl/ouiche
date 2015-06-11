@@ -27,6 +27,7 @@ add_executable (tool-deserialize test/tool-deserialize.cc)
 add_executable (tool-deserialize-print test/tool-deserialize-print.cc)
 add_executable (tool-print test/tool-deserialize-print.cc)
 add_executable (tool-serialize test/tool-serialize.cc)
+add_executable (example-dl test/example-dl.cc)
 
 # Unit tests
 

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <algorithm>
+#include <iomanip>
+#include <iostream>
 #include <limits>
 #include <string>
 #include <vector>
@@ -8,6 +10,8 @@
 class DamerauLevenshtein
 {
 public:
+    const unsigned infty = std::numeric_limits<unsigned>::max() >> 1;
+
     DamerauLevenshtein(const std::string& word, unsigned max_dist)
       : word_(word)
       , max_dist_(max_dist)
@@ -38,8 +42,6 @@ public:
     // Returns a pair (continue searching, accept this one)
     std::pair<bool, bool> feed(char c)
     {
-        const unsigned infty = std::numeric_limits<unsigned>::max() >> 1;
-
         bool cont = false;
         current_.push_back(c);
 
@@ -79,6 +81,33 @@ public:
                 cont = true;
         }
         return {cont, dist() <= max_dist_};
+    }
+
+    friend std::ostream& operator<< (std::ostream& out,
+                                     const DamerauLevenshtein& dl)
+    {
+        if (dl.word_.empty())
+            return out;
+        out << "     ";
+        for (auto c: dl.word_)
+            out << " " << c << " ";
+        size_t ws = dl.word_.size();
+        out << std::endl << " ";
+        for (size_t i = 0; i < dl.table_.size(); i++)
+        {
+            if (i % (ws + 1) == 0 && i / (ws + 1) > 0)
+            {
+                out << std::endl;
+                out << dl.current_[i / (ws + 1) - 1];
+            }
+            out << std::setw(3);
+            if (dl.table_[i] > (dl.infty >> 1))
+                out << "oo";
+            else
+                out << dl.table_[i];
+        }
+        out << std::endl;
+        return out;
     }
 
 private:
