@@ -8,6 +8,9 @@ all: build
 check: all build
 	$(MK) check
 
+tools: all build
+	$(MK) tools
+
 clean:
 	rm -f TextMiningApp TextMiningCompiler
 	rm -rf build

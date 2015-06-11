@@ -23,11 +23,15 @@ set_target_properties(TextMiningApp PROPERTIES RUNTIME_OUTPUT_DIRECTORY
 
 # Test tools
 
-add_executable (tool-deserialize test/tool-deserialize.cc)
-add_executable (tool-deserialize-print test/tool-deserialize-print.cc)
-add_executable (tool-print test/tool-deserialize-print.cc)
-add_executable (tool-serialize test/tool-serialize.cc)
-add_executable (example-dl test/example-dl.cc)
+add_executable (tool-deserialize EXCLUDE_FROM_ALL test/tool-deserialize.cc)
+add_executable (tool-deserialize-print EXCLUDE_FROM_ALL
+    test/tool-deserialize-print.cc)
+add_executable (tool-print EXCLUDE_FROM_ALL test/tool-deserialize-print.cc)
+add_executable (tool-serialize EXCLUDE_FROM_ALL test/tool-serialize.cc)
+add_executable (example-dl EXCLUDE_FROM_ALL test/example-dl.cc)
+
+add_custom_target(tools DEPENDS tool-deserialize tool-deserialize-print
+    tool-print tool-serialize example-dl)
 
 # Unit tests
 
