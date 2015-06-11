@@ -20,6 +20,8 @@ clean:
 	rm -f TextMiningApp TextMiningCompiler
 	rm -rf build
 
-build: CMakeLists.txt
+build: build/Makefile
+
+build/Makefile: CMakeLists.txt
 	mkdir -p build
 	cd build && cmake ..
