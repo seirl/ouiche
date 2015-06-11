@@ -31,5 +31,6 @@ add_executable (tool-serialize test/tool-serialize.cc)
 # Unit tests
 
 enable_testing()
-add_executable (unit test/unit.cc)
+add_executable (unit EXCLUDE_FROM_ALL test/unit.cc)
 add_test(unit unit)
+add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} DEPENDS unit)

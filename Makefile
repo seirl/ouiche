@@ -5,8 +5,8 @@ MK=$(MAKE) -s -C build
 all: build
 	$(MK)
 
-test: all build
-	$(MK) test
+check: all build
+	$(MK) check
 
 clean:
 	rm -f TextMiningApp TextMiningCompiler
