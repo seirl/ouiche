@@ -43,14 +43,18 @@ int main(int argc, char* argv[])
     void* file = mmap(NULL, s.st_size, PROT_READ, MAP_FILE | MAP_SHARED, fd, 0);
     char* start = reinterpret_cast<char*>(file);
 
-    std::string approx;
-    std::string word;
-    int max_dist;
     while (!std::cin.eof())
     {
+        std::string approx;
+        std::string word;
+        int max_dist = -1;
+
         std::cin >> approx;
         std::cin >> max_dist;
         std::cin >> word;
+
+        if (!word.size())
+            continue;
 
         if (max_dist >= 0)
         {
