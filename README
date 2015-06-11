@@ -34,7 +34,10 @@ more information.
     > approx 2 analphabaite
     [{"word":"analphabete","freq":84674,"distance":2}]
     > approx 3 aoviaiateur
-    [{"word":"aviateur","freq":194553,"distance":3},{"word":"naviagateur","freq":530,"distance":3},{"word":"affiliateur","freq":382,"distance":3},{"word":"avigateur","freq":336,"distance":3}]
+    [{"word":"aviateur","freq":194553,"distance":3},
+     {"word":"naviagateur","freq":530,"distance":3},
+     {"word":"affiliateur","freq":382,"distance":3},
+     {"word":"avigateur","freq":336,"distance":3}]
 
 # FAQ
 
