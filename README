@@ -54,7 +54,7 @@ as-is.
 The app uses `mmap(2)` to fetch the trie in memory. Then, for every word asked,
 it constructs a Damerau-Levenshtein table with this words. This dynamic table
 is able to be "fed" with a character, and "rollbacked" to a previous state.
-This allows us to fed the characters of the trie as they come, until the
+This allows us to feed the characters of the trie as they come, until the
 DL table has no way to output a distance with a smaller size than the maximum
 distance, in which case we try another branch of the trie by resetting the DL
 table to the previous distance.
